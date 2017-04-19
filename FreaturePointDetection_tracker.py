@@ -214,8 +214,8 @@ def batchProcess(parentpath, theExp):
 		print "Total number of detected dots: ", len(tracks)
 		print "cell area [um2]", scaledCellArea
 		print "Dot Density:[count / um2]:" , density
-		print "Number of Ripped off (" + preDrug_Starts + " to " + preDrug_Ends + " frame):", ctrlcounts	
-		print "Number of Ripped off (" + postDrug_Starts + " to " + postDrug_Ends + " frame):", counts
+		print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", ctrlcounts	
+		print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", counts
 	
 		resarray.append([cellNo, scaledCellArea, len(tracks), density, ctrlcounts, counts, ripoffRatio])
 		outname = "cell" + str(cellNo) + '_dots.tif'
@@ -273,6 +273,6 @@ exps = {
 	'Genistein_exps' : range(11),
 	'bcyclo_exps' : range(9),
 	'a5b1_exps' : [0, 1, 9],
-	'beta1AB_exps' : [1, 2, 3, 4, 5, 6, 9]
+	'beta1AB_exps' : [1, 2, 3, 4, 5, 6, 9],
 	'Hela':  [0, 1, 2, 3, 4, 5, 6, 8, 9]
 }
