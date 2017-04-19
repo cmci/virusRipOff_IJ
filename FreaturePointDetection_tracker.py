@@ -15,6 +15,31 @@ import os, csv, sys
 import math
 
 
+### key final variables ###
+
+## particle detection parameters
+
+# cutoff value for non-particle discrimination (float)
+mosaic_cutoff = 0.0
+# percentile for intensity threshold (float)
+mosaic_percentile = 0.035
+# estimated particle radius (int)
+mosaic_radius = 2
+
+## particle linking
+# maximally allowed distance for particle being considered to be "stationary"
+# unit = pixels. int value. 
+max_allowed_distance = 10
+
+## frame numbers for sampling range. 
+# As of 20170419 3 frames each from pre and post drug treatment 
+# (drug is added just after 4th frame)
+preDrug_Starts = 2
+preDrug_Ends = 4
+postDrug_Starts = 5
+postDrug_Ends = 7
+
+
 ## particle class
 class FP(object):
 	
@@ -52,7 +77,7 @@ def searchNextParticle(fs, p, track):
 	track.append(p)
 	if  p.getFrame() < len(fs):
 		ptcles = fs[p.getFrame()]  #particles in next frame
-		dmin = 10
+		dmin = max_allowed_distance
 		for p2 in ptcles:
 			dd = dist(p, p2)
 			if dd < dmin:
@@ -83,7 +108,7 @@ def core(cellroi, imagepath):
 		currentframe = f + 1
 		stack = MosaicUtils.GetSubStackInFloat(imp.getStack(), currentframe, currentframe) 
 		detector = FeaturePointDetector(stack.getProcessor(1).getMax(), stack.getProcessor(1).getMin())
-		detector.setDetectionParameters(0.0, 0.035, 2, 0.5, False)
+		detector.setDetectionParameters(mosaic_cutoff, mosaic_percentile, mosaic_radius, 0.5, False)
 		detectedParticles = detector.featurePointDetection(stack)
 		print 'particles:', len(detectedParticles)
 		for p in detectedParticles:
@@ -103,14 +128,14 @@ def core(cellroi, imagepath):
 	for t in tracks:
 		print len(t)
 	
-	# sum up number of particles ripped off from 5th to 10th frame (6 frames)
+	# sum up number of particles ripped off during pre and post drug (from 20170419, 3 frames each)
 	counts = 0
-	ctrlcounts = 0
+	ctrlcounts = 0	
 	for t in tracks:
 		lastframe = t[-1].getFrame()
-		if lastframe >= 5 and lastframe <= 10:
+		if lastframe >= postDrug_Starts and lastframe <= postDrug_Ends:
 			counts += 1
-		elif lastframe < 5:
+		elif lastframe >= preDrug_Starts and lastframe <= preDrug_Ends:
 			ctrlcounts += 1
 	
 	IJ.run(imp, "RGB Color", "")
@@ -189,8 +214,8 @@ def batchProcess(parentpath, theExp):
 		print "Total number of detected dots: ", len(tracks)
 		print "cell area [um2]", scaledCellArea
 		print "Dot Density:[count / um2]:" , density
-		print "Number of Ripped off (1st to 4th frame):", ctrlcounts	
-		print "Number of Ripped off (5th to 10th frame):", counts
+		print "Number of Ripped off (" + preDrug_Starts + " to " + preDrug_Ends + " frame):", ctrlcounts	
+		print "Number of Ripped off (" + postDrug_Starts + " to " + postDrug_Ends + " frame):", counts
 	
 		resarray.append([cellNo, scaledCellArea, len(tracks), density, ctrlcounts, counts, ripoffRatio])
 		outname = "cell" + str(cellNo) + '_dots.tif'
