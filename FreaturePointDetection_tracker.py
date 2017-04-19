@@ -250,7 +250,8 @@ folderDict = {
 	'170222 Genistein croped and 16 frames': range(11),
 	'170302 bcyclo croped and 16 frames' : range(9),
 	'170307 a5b1peptidomimetic croped and 16 frames': [0, 1, 9],
-	'170328 beta1ABp5d2 croped and 14 frames' : [1, 2, 3, 4, 5, 6, 9]
+	'170328 beta1ABp5d2 croped and 14 frames' : [1, 2, 3, 4, 5, 6, 9],
+	'170405 Hela croped and 16 frames' : [0, 1, 2, 3, 4, 5, 6, 8, 9]
 }
 
 for key, val in folderDict.iteritems():
@@ -273,4 +274,5 @@ exps = {
 	'bcyclo_exps' : range(9),
 	'a5b1_exps' : [0, 1, 9],
 	'beta1AB_exps' : [1, 2, 3, 4, 5, 6, 9]
+	'Hela':  [0, 1, 2, 3, 4, 5, 6, 8, 9]
 }
