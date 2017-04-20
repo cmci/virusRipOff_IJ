@@ -162,6 +162,7 @@ def core(cellroi, imagepath):
 	for t in tracks:
 		for ap in t:
 			countTrackTotalPoints[ap.getFrame() - 1] += 1
+	secondFrameVirusCounts = countTrackTotalPoints[1]
 
 	outcountpath = imagepath + '_counts.csv'
 	f = open(outcountpath, 'wb')
@@ -172,7 +173,7 @@ def core(cellroi, imagepath):
 		writer.writerow(arow)
 	f.close()
 	
-	return tracks, cellarea, counts, ctrlcounts, imp, reallength
+	return tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts
 
 
 def main(parentpath, cellNo): 
@@ -196,9 +197,9 @@ def main(parentpath, cellNo):
 	#imagepath = '/Users/miura/Desktop/161122 ctrl croped and 16 frames/cell1_virus_median.tif'
 	imagepath = os.path.join(parentpath, imagename)
 	
-	tracks, cellarea, counts, ctrlcounts, imp, reallength = core(cellroi, imagepath)
+	tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts = core(cellroi, imagepath)
  
-	return tracks, cellarea, counts, ctrlcounts, imp, reallength
+	return tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts
 
 
 def batchProcess(parentpath, theExp):
@@ -206,18 +207,22 @@ def batchProcess(parentpath, theExp):
 	#for ind in range(8):
 	for ind in theExp:
 		cellNo = ind + 1
-		tracks, cellarea, counts, ctrlcounts, imp, reallength = main(parentpath, cellNo)
+		tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts = main(parentpath, cellNo)
 		
 		scaledCellArea = cellarea * reallength * reallength 
-		density = len(tracks) / float(scaledCellArea)
-		ripoffRatio = counts / float(len(tracks))
+		#density = len(tracks) / float(scaledCellArea)
+		density = secondFrameVirusCounts / float(scaledCellArea)
+		#ripoffRatio = counts / float(len(tracks))
+		ripoffRatio = counts / float(secondFrameVirusCounts)		
 		print "Total number of detected dots: ", len(tracks)
+		print "Second Frame Counts", secondFrameVirusCounts
 		print "cell area [um2]", scaledCellArea
 		print "Dot Density:[count / um2]:" , density
 		print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", ctrlcounts	
 		print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", counts
 	
-		resarray.append([cellNo, scaledCellArea, len(tracks), density, ctrlcounts, counts, ripoffRatio])
+		#resarray.append([cellNo, scaledCellArea, len(tracks), density, ctrlcounts, counts, ripoffRatio])
+		resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, ctrlcounts, counts, ripoffRatio])		
 		outname = "cell" + str(cellNo) + '_dots.tif'
 		savefilepath = os.path.join(parentpath, outname)	
 		IJ.saveAsTiff(imp, savefilepath)
