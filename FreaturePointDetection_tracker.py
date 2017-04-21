@@ -73,11 +73,12 @@ def fetch_datalist(path):
 	with open(path, 'rb') as datalistcsv:
 		datalist = csv.reader( datalistcsv )
 		for i, row in enumerate(datalist):
+			print row
 			if i == 0:
 				pass
-			elif i ==1:
-				gppath = row[0]
 			else:
+				if i ==1:
+					gppath = row[0]
 				templist =  filter(lambda x: x != '', row[2:])
 				templist = map(int, templist)
 				templist = map(lambda x: x -1, templist)
@@ -186,12 +187,16 @@ def core(cellroi, imagepath):
 			countTrackTotalPoints[ap.getFrame() - 1] += 1
 	secondFrameVirusCounts = countTrackTotalPoints[1]
 
+        scaledCellArea = cellarea * reallength * reallength
+        ripoffA = map(lambda x : x / scaledCellArea, countTrackLastPoints)
+        totalA = map(lambda x : x / scaledCellArea, countTrackTotalPoints)
+
 	outcountpath = imagepath + '_counts.csv'
 	f = open(outcountpath, 'wb')
 	writer = csv.writer(f)
-	writer.writerow(['Frame', 'Counts', 'TotalCounts'])
+	writer.writerow(['Frame', 'Counts', 'TotalCounts', 'RipOff_Density', 'Virus_Density'])
 	for index, count in enumerate(countTrackLastPoints):
-		arow = [ index + 1, count, countTrackTotalPoints[index]]
+		arow = [ index + 1, count, countTrackTotalPoints[index], ripoffA[index], totalA[index]]
 		writer.writerow(arow)
 	f.close()
 	
@@ -235,8 +240,14 @@ def batchProcess(parentpath, theExp):
 		#density = len(tracks) / float(scaledCellArea)
 		density = secondFrameVirusCounts / float(scaledCellArea)
 		#ripoffRatio = postcounts / float(len(tracks))
-		ripoffRatio = postcounts / float(secondFrameVirusCounts)
-		ripoffRatio2 = postcounts2 / float(secondFrameVirusCounts)		
+                if postcounts > 0:
+                    ripoffRatio = postcounts / float(secondFrameVirusCounts)
+                else: 
+                    ripoffRatio = float('NaN')
+                if postcounts2 > 0:
+		    ripoffRatio2 = postcounts2 / float(secondFrameVirusCounts)
+                else:
+                    ripoffRatio2 = float('NaN')
 		print "Total number of detected dots: ", len(tracks)
 		print "Second Frame Counts", secondFrameVirusCounts
 		print "cell area [um2]", scaledCellArea
@@ -264,7 +275,7 @@ def batchProcess(parentpath, theExp):
 
 ###############
 
-datalistpath = '/Users/miura/Dropbox/people/Tina/shared_Tina_Kota/data_lists/test.csv'
+#datalistpath = '/Users/miura/Dropbox/people/Tina/shared_Tina_Kota/data_lists/test.csv'
 
 grandparentpath, folderDict = fetch_datalist(datalistfile.getPath())
 #grandparentpath, folderDict = fetch_datalist(datalistpath)
