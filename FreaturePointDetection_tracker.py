@@ -73,12 +73,13 @@ def fetch_datalist(path):
 	with open(path, 'rb') as datalistcsv:
 		datalist = csv.reader( datalistcsv )
 		for i, row in enumerate(datalist):
+			print row
 			if i == 0:
 				pass
 			else:
 				if i ==1:
 					gppath = row[0]
-				templist =  filter(lambda x: x != '', row[2:])
+				templist =  filter(lambda x: x != '', row[3:])
 				templist = map(int, templist)
 				templist = map(lambda x: x -1, templist)
 				adict[row[1]] = templist
