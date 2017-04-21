@@ -132,13 +132,16 @@ def core(cellroi, imagepath):
 	
 	# sum up number of particles ripped off during pre and post drug (from 20170419, 3 frames each)
 	postcounts = 0
-	precounts = 0	
+	precounts = 0
+	postcounts2 = 0	
 	for t in tracks:
 		lastframe = t[-1].getFrame()
 		if lastframe >= postDrug_Starts and lastframe <= postDrug_Ends:
 			postcounts += 1
 		elif lastframe >= preDrug_Starts and lastframe <= preDrug_Ends:
 			precounts += 1
+		elif lastframe >= postDrug2_Starts and lastframe <= postDrug2_Ends:
+			postcounts2 += 1
 	
 	IJ.run(imp, "RGB Color", "")
 	for t in tracks:
@@ -175,7 +178,7 @@ def core(cellroi, imagepath):
 		writer.writerow(arow)
 	f.close()
 	
-	return tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts
+	return tracks, cellarea, postcounts, postcounts2, precounts, imp, reallength, secondFrameVirusCounts
 
 
 def main(parentpath, cellNo): 
@@ -199,9 +202,9 @@ def main(parentpath, cellNo):
 	#imagepath = '/Users/miura/Desktop/161122 ctrl croped and 16 frames/cell1_virus_median.tif'
 	imagepath = os.path.join(parentpath, imagename)
 	
-	tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts = core(cellroi, imagepath)
+	tracks, cellarea, postcounts, postcounts2, precounts, imp, reallength, secondFrameVirusCounts = core(cellroi, imagepath)
  
-	return tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts
+	return tracks, cellarea, postcounts, postcounts2, precounts, imp, reallength, secondFrameVirusCounts
 
 
 def batchProcess(parentpath, theExp):
@@ -209,22 +212,24 @@ def batchProcess(parentpath, theExp):
 	#for ind in range(8):
 	for ind in theExp:
 		cellNo = ind + 1
-		tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts = main(parentpath, cellNo)
+		tracks, cellarea, postcounts, postcounts2, precounts, imp, reallength, secondFrameVirusCounts = main(parentpath, cellNo)
 		
 		scaledCellArea = cellarea * reallength * reallength 
 		#density = len(tracks) / float(scaledCellArea)
 		density = secondFrameVirusCounts / float(scaledCellArea)
 		#ripoffRatio = postcounts / float(len(tracks))
-		ripoffRatio = postcounts / float(secondFrameVirusCounts)		
+		ripoffRatio = postcounts / float(secondFrameVirusCounts)
+		ripoffRatio2 = postcounts2 / float(secondFrameVirusCounts)		
 		print "Total number of detected dots: ", len(tracks)
 		print "Second Frame Counts", secondFrameVirusCounts
 		print "cell area [um2]", scaledCellArea
 		print "Dot Density:[count / um2]:" , density
 		print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", precounts	
 		print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", postcounts
+		print "Number of Ripped off (", postDrug2_Starts, " to ", postDrug2_Ends, " frame):", postcounts2
 	
 		#resarray.append([cellNo, scaledCellArea, len(tracks), density, precounts, postcounts, ripoffRatio])
-		resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, precounts, postcounts, ripoffRatio])		
+		resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, precounts, postcounts, postcounts2, ripoffRatio])		
 		outname = "cell" + str(cellNo) + '_dots.tif'
 		savefilepath = os.path.join(parentpath, outname)	
 		IJ.saveAsTiff(imp, savefilepath)
@@ -233,7 +238,7 @@ def batchProcess(parentpath, theExp):
 	outcsvpath = os.path.join(parentpath, 'results.csv')
 	f = open(outcsvpath, 'wb')
 	writer = csv.writer(f)
-	writer.writerow(['CellID', 'Area[um2]', 'Dots Total', 'Density', 'RipOff counts1_4', 'RipOff counts5_10', 'RipOff Ratio'])
+	writer.writerow(['CellID', 'Area[um2]', 'Dots Total', 'Density', 'RipOff counts2_4', 'RipOff counts5_7', 'RipOff counts8_10', 'RipOff Ratio'])
 	for arow in resarray:
 		#arow = [cellNo, cellarea, len(tracks), postcounts, precounts]
 		writer.writerow(arow)
