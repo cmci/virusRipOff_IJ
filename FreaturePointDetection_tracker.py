@@ -38,6 +38,8 @@ preDrug_Starts = 2
 preDrug_Ends = 4
 postDrug_Starts = 5
 postDrug_Ends = 7
+postDrug2_Starts = 8
+postDrug2_Ends = 10
 
 
 ## particle class
@@ -129,14 +131,14 @@ def core(cellroi, imagepath):
 		print len(t)
 	
 	# sum up number of particles ripped off during pre and post drug (from 20170419, 3 frames each)
-	counts = 0
-	ctrlcounts = 0	
+	postcounts = 0
+	precounts = 0	
 	for t in tracks:
 		lastframe = t[-1].getFrame()
 		if lastframe >= postDrug_Starts and lastframe <= postDrug_Ends:
-			counts += 1
+			postcounts += 1
 		elif lastframe >= preDrug_Starts and lastframe <= preDrug_Ends:
-			ctrlcounts += 1
+			precounts += 1
 	
 	IJ.run(imp, "RGB Color", "")
 	for t in tracks:
@@ -173,7 +175,7 @@ def core(cellroi, imagepath):
 		writer.writerow(arow)
 	f.close()
 	
-	return tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts
+	return tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts
 
 
 def main(parentpath, cellNo): 
@@ -197,9 +199,9 @@ def main(parentpath, cellNo):
 	#imagepath = '/Users/miura/Desktop/161122 ctrl croped and 16 frames/cell1_virus_median.tif'
 	imagepath = os.path.join(parentpath, imagename)
 	
-	tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts = core(cellroi, imagepath)
+	tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts = core(cellroi, imagepath)
  
-	return tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts
+	return tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts
 
 
 def batchProcess(parentpath, theExp):
@@ -207,22 +209,22 @@ def batchProcess(parentpath, theExp):
 	#for ind in range(8):
 	for ind in theExp:
 		cellNo = ind + 1
-		tracks, cellarea, counts, ctrlcounts, imp, reallength, secondFrameVirusCounts = main(parentpath, cellNo)
+		tracks, cellarea, postcounts, precounts, imp, reallength, secondFrameVirusCounts = main(parentpath, cellNo)
 		
 		scaledCellArea = cellarea * reallength * reallength 
 		#density = len(tracks) / float(scaledCellArea)
 		density = secondFrameVirusCounts / float(scaledCellArea)
-		#ripoffRatio = counts / float(len(tracks))
-		ripoffRatio = counts / float(secondFrameVirusCounts)		
+		#ripoffRatio = postcounts / float(len(tracks))
+		ripoffRatio = postcounts / float(secondFrameVirusCounts)		
 		print "Total number of detected dots: ", len(tracks)
 		print "Second Frame Counts", secondFrameVirusCounts
 		print "cell area [um2]", scaledCellArea
 		print "Dot Density:[count / um2]:" , density
-		print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", ctrlcounts	
-		print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", counts
+		print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", precounts	
+		print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", postcounts
 	
-		#resarray.append([cellNo, scaledCellArea, len(tracks), density, ctrlcounts, counts, ripoffRatio])
-		resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, ctrlcounts, counts, ripoffRatio])		
+		#resarray.append([cellNo, scaledCellArea, len(tracks), density, precounts, postcounts, ripoffRatio])
+		resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, precounts, postcounts, ripoffRatio])		
 		outname = "cell" + str(cellNo) + '_dots.tif'
 		savefilepath = os.path.join(parentpath, outname)	
 		IJ.saveAsTiff(imp, savefilepath)
@@ -233,7 +235,7 @@ def batchProcess(parentpath, theExp):
 	writer = csv.writer(f)
 	writer.writerow(['CellID', 'Area[um2]', 'Dots Total', 'Density', 'RipOff counts1_4', 'RipOff counts5_10', 'RipOff Ratio'])
 	for arow in resarray:
-		#arow = [cellNo, cellarea, len(tracks), counts, ctrlcounts]
+		#arow = [cellNo, cellarea, len(tracks), postcounts, precounts]
 		writer.writerow(arow)
 	f.close()
 #imp.show()  # this should be saved.
@@ -264,7 +266,7 @@ for key, val in folderDict.iteritems():
 	batchProcess(parentpath, val)
 
 
-''''
+'''
 exps = {
 	'ctrl1_exps' : range(5), 
 	'ctrl2_exps' : range(8),
@@ -281,4 +283,4 @@ exps = {
 	'beta1AB_exps' : [1, 2, 3, 4, 5, 6, 9],
 	'Hela':  [0, 1, 2, 3, 4, 5, 6, 8, 9]
 }
-''''
+'''
