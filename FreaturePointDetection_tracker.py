@@ -73,12 +73,14 @@ def fetch_datalist(path):
 		datalist = csv.reader( datalistcsv )
 		for i, row in enumerate(datalist):
 			if i == 0:
+				pass
+			elif i ==1:
 				gppath = row[0]
 			else:
-				templist =  filter(lambda x: x != '', row[1:])
+				templist =  filter(lambda x: x != '', row[2:])
 				templist = map(int, templist)
 				templist = map(lambda x: x -1, templist)
-				adict[row[0]] = templist
+				adict[row[1]] = templist
 	return gppath, adict
 
 # p1 and p2 are particles
