@@ -260,25 +260,6 @@ def batchProcess(parentpath, theExp):
 #imp.show()  # this should be saved.
 
 ###############
-#grandparentpath = '/Users/miura/Dropbox/people/Tina/shared_Tina_Kota/Data Tina/'
-
-#folderDict = {
-#	'161122 ctrl croped and 16 frames' : range(5),
-#	'161206 ctrl croped and 16 frames': range(8),
-#	'161129 ROCKinh croped and 16 frames' : [0, 1, 2, 5, 6],
-#	'161205 10umblebb croped and 16 frames': [0, 2, 3, 6, 7],
-#	'161222 claD0.06 croped and 16 frames' : [0, 1, 2, 3],
-#	'170130 CK666 croped and 16 frames': [0, 1, 2, 3, 7, 8],
-#	'170206 KOCLCAB croped and 50 frames': [1, 2, 4, 5, 6, 7, 8, 9],
-#	'170215 SMIFH2 croped and 16 frames': [1, 2, 3, 4, 5, 6, 7],
-#	'170217 Jasplakinolide croped and 16 frames': [4],
-#	'170221 Jasplakinolide croped and 16 frames' : [1, 2, 3, 4], 
-#	'170222 Genistein croped and 16 frames': range(11),
-#	'170302 bcyclo croped and 16 frames' : range(9),
-#	'170307 a5b1peptidomimetic croped and 16 frames': [0, 1, 2, 4, 5, 6, 7, 8, 9, 10],
-#	'170328 beta1ABp5d2 croped and 14 frames' : [1, 2, 3, 4, 5, 6, 9],
-#	'170405 Hela croped and 16 frames' : [0, 1, 2, 3, 4, 5, 6, 8, 9]
-#}
 
 grandparentpath, folderDict = fetch_datalist(datalistpath.getPath())
 
@@ -295,21 +276,3 @@ for key, val in folderDict.iteritems():
 	batchProcess(parentpath, val)
 
 
-'''
-exps = {
-	'ctrl1_exps' : range(5), 
-	'ctrl2_exps' : range(8),
-	'ROCKinh_exps' : [0, 1, 2, 5, 6],
-	'blebb10uM_exps' : [0, 2, 3, 6, 7],
-	'ClaD_exps' : [0, 1, 2],
-	'CK666_exps' : [0, 1, 2, 3, 7, 8],
-	'KOCLCAB_exps' : [1, 2, 4, 5, 6, 7, 8, 9],
-	'SMIFH2_exps' : [1, 2, 3, 4, 5, 6, 7],
-	'Jasplakinolide1_exps' : [4],
-	'Genistein_exps' : range(11),
-	'bcyclo_exps' : range(9),
-	'a5b1_exps' : [0, 1, 9],
-	'beta1AB_exps' : [1, 2, 3, 4, 5, 6, 9],
-	'Hela':  [0, 1, 2, 3, 4, 5, 6, 8, 9]
-}
-'''
