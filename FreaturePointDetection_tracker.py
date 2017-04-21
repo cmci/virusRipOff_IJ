@@ -1,3 +1,5 @@
+# @File(label="Select CSV file listing data folders and CellIDs") datalistpath
+
 # Dot detection based on MOSAIC feature point detector
 # tracks detected dots over time with nearest neighbor method
 # exports sum of "RippedOff" dots during 1-4th frame and 5-10th frame (drug addition at 4th frame)
@@ -29,8 +31,7 @@ mosaic_radius = 2
 ## particle linking
 # maximally allowed distance for particle being considered to be "stationary"
 # unit = pixels. int value. 
-max_allowed_distance = 10
-
+criticalDist = 3
 ## frame numbers for sampling range. 
 # As of 20170419 3 frames each from pre and post drug treatment 
 # (drug is added just after 4th frame)
@@ -65,13 +66,26 @@ class FP(object):
 		tly = self.y - math.floor(ww/2.0)
 		return Roi(tlx, tly, ww, ww)
 		
-
+def fetch_datalist(path):
+	adict = {}
+	gppath = ''
+	with open(path, 'rb') as datalistcsv:
+		datalist = csv.reader( datalistcsv )
+		for i, row in enumerate(datalist):
+			if i == 0:
+				gppath = row[0]
+			else:
+				templist =  filter(lambda x: x != '', row[1:])
+				templist = map(int, templist)
+				templist = map(lambda x: x -1, templist)
+				adict[row[0]] = templist
+	return gppath, adict
 
 # p1 and p2 are particles
 def dist(p1, p2):
 	return math.sqrt(math.pow(p1.getX() - p2.getX(), 2) + math.pow(p1.getY() - p2.getY(), 2))
 
-criticalDist=3
+
 # searches a particle at similar position recursively
 # fs frames, p a particle, track: a list
 def searchNextParticle(fs, p, track):
@@ -79,7 +93,7 @@ def searchNextParticle(fs, p, track):
 	track.append(p)
 	if  p.getFrame() < len(fs):
 		ptcles = fs[p.getFrame()]  #particles in next frame
-		dmin = max_allowed_distance
+		dmin = 10
 		for p2 in ptcles:
 			dd = dist(p, p2)
 			if dd < dmin:
@@ -246,25 +260,35 @@ def batchProcess(parentpath, theExp):
 #imp.show()  # this should be saved.
 
 ###############
-grandparentpath = '/Users/miura/Dropbox/people/Tina/shared_Tina_Kota/Data Tina/'
+#grandparentpath = '/Users/miura/Dropbox/people/Tina/shared_Tina_Kota/Data Tina/'
 
-folderDict = {
-	'161122 ctrl croped and 16 frames' : range(5),
-	'161206 ctrl croped and 16 frames': range(8),
-	'161129 ROCKinh croped and 16 frames' : [0, 1, 2, 5, 6],
-	'161205 10umblebb croped and 16 frames': [0, 2, 3, 6, 7],
-	'161222 claD0.06 croped and 16 frames' : [0, 1, 2, 3],
-	'170130 CK666 croped and 16 frames': [0, 1, 2, 3, 7, 8],
-	'170206 KOCLCAB croped and 50 frames': [1, 2, 4, 5, 6, 7, 8, 9],
-	'170215 SMIFH2 croped and 16 frames': [1, 2, 3, 4, 5, 6, 7],
-	'170217 Jasplakinolide croped and 16 frames': [4],
-	'170221 Jasplakinolide croped and 16 frames' : [1, 2, 3, 4], 
-	'170222 Genistein croped and 16 frames': range(11),
-	'170302 bcyclo croped and 16 frames' : range(9),
-	'170307 a5b1peptidomimetic croped and 16 frames': [0, 1, 2, 4, 5, 6, 7, 8, 9, 10],
-	'170328 beta1ABp5d2 croped and 14 frames' : [1, 2, 3, 4, 5, 6, 9],
-	'170405 Hela croped and 16 frames' : [0, 1, 2, 3, 4, 5, 6, 8, 9]
-}
+#folderDict = {
+#	'161122 ctrl croped and 16 frames' : range(5),
+#	'161206 ctrl croped and 16 frames': range(8),
+#	'161129 ROCKinh croped and 16 frames' : [0, 1, 2, 5, 6],
+#	'161205 10umblebb croped and 16 frames': [0, 2, 3, 6, 7],
+#	'161222 claD0.06 croped and 16 frames' : [0, 1, 2, 3],
+#	'170130 CK666 croped and 16 frames': [0, 1, 2, 3, 7, 8],
+#	'170206 KOCLCAB croped and 50 frames': [1, 2, 4, 5, 6, 7, 8, 9],
+#	'170215 SMIFH2 croped and 16 frames': [1, 2, 3, 4, 5, 6, 7],
+#	'170217 Jasplakinolide croped and 16 frames': [4],
+#	'170221 Jasplakinolide croped and 16 frames' : [1, 2, 3, 4], 
+#	'170222 Genistein croped and 16 frames': range(11),
+#	'170302 bcyclo croped and 16 frames' : range(9),
+#	'170307 a5b1peptidomimetic croped and 16 frames': [0, 1, 2, 4, 5, 6, 7, 8, 9, 10],
+#	'170328 beta1ABp5d2 croped and 14 frames' : [1, 2, 3, 4, 5, 6, 9],
+#	'170405 Hela croped and 16 frames' : [0, 1, 2, 3, 4, 5, 6, 8, 9]
+#}
+
+grandparentpath, folderDict = fetch_datalist(datalistpath.getPath())
+
+print "Folder containing  data: ", grandparentpath
+folders = folderDict.keys()
+folders.sort()
+for afolder in folders:
+	print afolder
+	print folderDict[afolder]
+
 
 for key, val in folderDict.iteritems():
 	parentpath = os.path.join(grandparentpath, key)
