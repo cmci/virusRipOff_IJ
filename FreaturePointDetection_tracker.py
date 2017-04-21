@@ -1,6 +1,5 @@
-'''
 # @File(label="Select CSV file listing data folders and CellIDs") datalistfile
-'''
+
 
 # Dot detection based on MOSAIC feature point detector
 # tracks detected dots over time with nearest neighbor method
@@ -267,8 +266,8 @@ def batchProcess(parentpath, theExp):
 
 datalistpath = '/Users/miura/Dropbox/people/Tina/shared_Tina_Kota/data_lists/test.csv'
 
-#grandparentpath, folderDict = fetch_datalist(datalistfile.getPath())
-grandparentpath, folderDict = fetch_datalist(datalistpath)
+grandparentpath, folderDict = fetch_datalist(datalistfile.getPath())
+#grandparentpath, folderDict = fetch_datalist(datalistpath)
 
 print "Folder containing  data: ", grandparentpath
 folders = folderDict.keys()
