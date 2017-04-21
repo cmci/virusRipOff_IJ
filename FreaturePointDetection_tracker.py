@@ -73,7 +73,6 @@ def fetch_datalist(path):
 	with open(path, 'rb') as datalistcsv:
 		datalist = csv.reader( datalistcsv )
 		for i, row in enumerate(datalist):
-			print row
 			if i == 0:
 				pass
 			else:
