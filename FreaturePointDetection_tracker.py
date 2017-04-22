@@ -187,9 +187,9 @@ def core(cellroi, imagepath):
 			countTrackTotalPoints[ap.getFrame() - 1] += 1
 	secondFrameVirusCounts = countTrackTotalPoints[1]
 
-        scaledCellArea = cellarea * reallength * reallength
-        ripoffA = map(lambda x : x / scaledCellArea, countTrackLastPoints)
-        totalA = map(lambda x : x / scaledCellArea, countTrackTotalPoints)
+    scaledCellArea = cellarea * reallength * reallength
+    ripoffA = map(lambda x : x / scaledCellArea, countTrackLastPoints)
+    totalA = map(lambda x : x / scaledCellArea, countTrackTotalPoints)
 
 	outcountpath = imagepath + '_counts.csv'
 	f = open(outcountpath, 'wb')
@@ -240,14 +240,14 @@ def batchProcess(parentpath, theExp):
 		#density = len(tracks) / float(scaledCellArea)
 		density = secondFrameVirusCounts / float(scaledCellArea)
 		#ripoffRatio = postcounts / float(len(tracks))
-                if postcounts > 0:
-                    ripoffRatio = postcounts / float(secondFrameVirusCounts)
-                else: 
-                    ripoffRatio = float('NaN')
-                if postcounts2 > 0:
+        if postcounts > 0:
+        	ripoffRatio = postcounts / float(secondFrameVirusCounts)
+        else: 
+            ripoffRatio = float('NaN')
+        if postcounts2 > 0:
 		    ripoffRatio2 = postcounts2 / float(secondFrameVirusCounts)
-                else:
-                    ripoffRatio2 = float('NaN')
+        else:
+            ripoffRatio2 = float('NaN')
 		print "Total number of detected dots: ", len(tracks)
 		print "Second Frame Counts", secondFrameVirusCounts
 		print "cell area [um2]", scaledCellArea
