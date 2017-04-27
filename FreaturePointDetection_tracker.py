@@ -185,11 +185,11 @@ def core(cellroi, imagepath):
 	for t in tracks:
 		for ap in t:
 			countTrackTotalPoints[ap.getFrame() - 1] += 1
-	secondFrameVirusCounts = countTrackTotalPoints[1]
 
-    scaledCellArea = cellarea * reallength * reallength
-    ripoffA = map(lambda x : x / scaledCellArea, countTrackLastPoints)
-    totalA = map(lambda x : x / scaledCellArea, countTrackTotalPoints)
+        secondFrameVirusCounts = countTrackTotalPoints[1]
+        scaledCellArea = cellarea * reallength * reallength
+        ripoffA = map(lambda x : x / scaledCellArea, countTrackLastPoints)
+        totalA = map(lambda x : x / scaledCellArea, countTrackTotalPoints)
 
 	outcountpath = imagepath + '_counts.csv'
 	f = open(outcountpath, 'wb')
@@ -240,37 +240,37 @@ def batchProcess(parentpath, theExp):
 		#density = len(tracks) / float(scaledCellArea)
 		density = secondFrameVirusCounts / float(scaledCellArea)
 		#ripoffRatio = postcounts / float(len(tracks))
-        if postcounts > 0:
-        	ripoffRatio = postcounts / float(secondFrameVirusCounts)
-        else: 
-            ripoffRatio = float('NaN')
-        if postcounts2 > 0:
-		    ripoffRatio2 = postcounts2 / float(secondFrameVirusCounts)
-        else:
-            ripoffRatio2 = float('NaN')
-		print "Total number of detected dots: ", len(tracks)
-		print "Second Frame Counts", secondFrameVirusCounts
-		print "cell area [um2]", scaledCellArea
-		print "Dot Density:[count / um2]:" , density
-		print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", precounts	
-		print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", postcounts
-		print "Number of Ripped off (", postDrug2_Starts, " to ", postDrug2_Ends, " frame):", postcounts2
-	
-		#resarray.append([cellNo, scaledCellArea, len(tracks), density, precounts, postcounts, ripoffRatio])
-		resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, precounts, postcounts, postcounts2, ripoffRatio])		
-		outname = "cell" + str(cellNo) + '_dots.tif'
-		savefilepath = os.path.join(parentpath, outname)	
-		IJ.saveAsTiff(imp, savefilepath)
-		
-	# exporting results
-	outcsvpath = os.path.join(parentpath, 'results.csv')
-	f = open(outcsvpath, 'wb')
-	writer = csv.writer(f)
-	writer.writerow(['CellID', 'Area[um2]', 'Dots Total', 'Density', 'RipOff counts2_4', 'RipOff counts5_7', 'RipOff counts8_10', 'RipOff Ratio'])
-	for arow in resarray:
-		#arow = [cellNo, cellarea, len(tracks), postcounts, precounts]
-		writer.writerow(arow)
-	f.close()
+                if postcounts > 0:
+                        ripoffRatio = postcounts / float(secondFrameVirusCounts)
+                else: 
+                    ripoffRatio = float('NaN')
+                if postcounts2 > 0:
+                            ripoffRatio2 = postcounts2 / float(secondFrameVirusCounts)
+                else:
+                    ripoffRatio2 = float('NaN')
+                print "Total number of detected dots: ", len(tracks)
+                print "Second Frame Counts", secondFrameVirusCounts
+                print "cell area [um2]", scaledCellArea
+                print "Dot Density:[count / um2]:" , density
+                print "Number of Ripped off (", preDrug_Starts, " to ", preDrug_Ends, " frame):", precounts	
+                print "Number of Ripped off (", postDrug_Starts, " to ", postDrug_Ends, " frame):", postcounts
+                print "Number of Ripped off (", postDrug2_Starts, " to ", postDrug2_Ends, " frame):", postcounts2
+
+                #resarray.append([cellNo, scaledCellArea, len(tracks), density, precounts, postcounts, ripoffRatio])
+                resarray.append([cellNo, scaledCellArea, secondFrameVirusCounts, density, precounts, postcounts, postcounts2, ripoffRatio])		
+                outname = "cell" + str(cellNo) + '_dots.tif'
+                savefilepath = os.path.join(parentpath, outname)	
+                IJ.saveAsTiff(imp, savefilepath)
+                
+                # exporting results
+                outcsvpath = os.path.join(parentpath, 'results.csv')
+                f = open(outcsvpath, 'wb')
+                writer = csv.writer(f)
+                writer.writerow(['CellID', 'Area[um2]', 'Dots Total', 'Density', 'RipOff counts2_4', 'RipOff counts5_7', 'RipOff counts8_10', 'RipOff Ratio'])
+                for arow in resarray:
+                        #arow = [cellNo, cellarea, len(tracks), postcounts, precounts]
+                        writer.writerow(arow)
+                f.close()
 #imp.show()  # this should be saved.
 
 ###############
